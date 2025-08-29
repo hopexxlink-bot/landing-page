@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>TeraBox Auto Landing</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background: #f0f2f5; margin: 0; padding: 0; }
+    .box { margin: 40px auto; padding: 25px; background: #fff; border-radius: 14px; max-width: 520px; box-shadow: 0 3px 12px rgba(0,0,0,0.15); }
+    h1 { color: #333; font-size: 22px; margin-bottom: 10px; }
+    img.preview { width: 100%; border-radius: 10px; margin: 10px 0; }
+    .btn { display: block; margin: 15px 0; padding: 14px; font-size: 18px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+    .watch { background: #27ae60; color: white; }
+    .download { background: #e74c3c; color: white; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1 id="title">Loading...</h1>
+    <img id="previewImg" class="preview" src="https://via.placeholder.com/500x280.png?text=Loading" alt="Preview">
+    <a id="watchBtn" class="btn watch" href="#" target="_blank">▶ Watch Online</a>
+    <a id="downloadBtn" class="btn download" href="#" target="_blank">⬇ Download Now</a>
+  </div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const link = urlParams.get("link");
+
+  if (link) {
+    document.getElementById("watchBtn").href = link;
+    document.getElementById("downloadBtn").href = link;
+
+    // auto fetch title + image from terabox
+    fetch(link)
+      .then(res => res.text())
+      .then(html => {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, "text/html");
+
+        // meta tags (depends on terabox structure)
+        let title = doc.querySelector("title")?.innerText || "TeraBox File";
+        let image = doc.querySelector('meta[property="og:image"]')?.content;
+
+        document.getElementById("title").innerText = title;
+        if (image) document.getElementById("previewImg").src = image;
+      })
+      .catch(err => {
+        document.getElementById("title").innerText = "TeraBox File";
+      });
+  }
+</script>
+</body>
+</html>
